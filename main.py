@@ -100,6 +100,28 @@ async def startup():
 async def health():
     return {"status": "ok"}
 
+@app.post("/seed-tools")
+async def seed_tools():
+    """Manually seed the vector DB (for debugging)"""
+    try:
+        for tool in SAMPLE_TOOLS:
+            response = openai_client.embeddings.create(
+                input=tool["description"],
+                model="text-embedding-3-small"
+            )
+            embedding = response.data[0].embedding
+            
+            index.upsert([(
+                tool["id"],
+                embedding,
+                {"name": tool["name"], "description": tool["description"], "full_definition": tool["full_definition"], "mcp_server": tool["mcp_server"]}
+            )])
+        
+        return {"status": "seeded", "tools_count": len(SAMPLE_TOOLS)}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/route", response_model=RouterResponse)
 async def route_query(req: RouterQuery):
     """Main router endpoint: find relevant tools for a query"""
