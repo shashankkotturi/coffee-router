@@ -6,6 +6,7 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import logging
+from tools import SAMPLE_TOOLS
 
 load_dotenv()
 
@@ -46,37 +47,37 @@ class RouterResponse(BaseModel):
     tools: list[dict]
     query_embedding: list[float]
 
-# Initialize with sample tools (you'd pull from DB in production)
-SAMPLE_TOOLS = [
-    {
-        "id": "brave_search",
-        "name": "Brave Search",
-        "description": "Search the web using Brave Search API. Returns top results for any query.",
-        "mcp_server": "brave-search",
-        "full_definition": '{"type": "function", "name": "search", "description": "Search the web"}'
-    },
-    {
-        "id": "github_repos",
-        "name": "GitHub Repository Finder",
-        "description": "Search and retrieve GitHub repositories by language, stars, or keywords.",
-        "mcp_server": "github",
-        "full_definition": '{"type": "function", "name": "search_repos", "description": "Find GitHub repos"}'
-    },
-    {
-        "id": "slack_msg",
-        "name": "Slack Message Retriever",
-        "description": "Query Slack messages from connected workspaces. Can search by keyword or user.",
-        "mcp_server": "slack",
-        "full_definition": '{"type": "function", "name": "search_messages", "description": "Find Slack messages"}'
-    },
-    {
-        "id": "sql_query",
-        "name": "SQL Database Query",
-        "description": "Execute SQL queries against connected PostgreSQL databases. Returns structured data.",
-        "mcp_server": "postgres",
-        "full_definition": '{"type": "function", "name": "query_db", "description": "Execute SQL"}'
-    },
-]
+# # Initialize with sample tools (you'd pull from DB in production)
+# SAMPLE_TOOLS = [
+#     {
+#         "id": "brave_search",
+#         "name": "Brave Search",
+#         "description": "Search the web using Brave Search API. Returns top results for any query.",
+#         "mcp_server": "brave-search",
+#         "full_definition": '{"type": "function", "name": "search", "description": "Search the web"}'
+#     },
+#     {
+#         "id": "github_repos",
+#         "name": "GitHub Repository Finder",
+#         "description": "Search and retrieve GitHub repositories by language, stars, or keywords.",
+#         "mcp_server": "github",
+#         "full_definition": '{"type": "function", "name": "search_repos", "description": "Find GitHub repos"}'
+#     },
+#     {
+#         "id": "slack_msg",
+#         "name": "Slack Message Retriever",
+#         "description": "Query Slack messages from connected workspaces. Can search by keyword or user.",
+#         "mcp_server": "slack",
+#         "full_definition": '{"type": "function", "name": "search_messages", "description": "Find Slack messages"}'
+#     },
+#     {
+#         "id": "sql_query",
+#         "name": "SQL Database Query",
+#         "description": "Execute SQL queries against connected PostgreSQL databases. Returns structured data.",
+#         "mcp_server": "postgres",
+#         "full_definition": '{"type": "function", "name": "query_db", "description": "Execute SQL"}'
+#     },
+# ]
 
 @app.on_event("startup")
 async def startup():
