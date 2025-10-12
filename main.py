@@ -5,8 +5,14 @@ from pinecone import Pinecone
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
+
+# Set logging level to reduce spam
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
+
 
 # Initialize clients
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
