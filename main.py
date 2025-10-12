@@ -121,6 +121,15 @@ async def seed_tools():
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/index-stats")
+async def get_index_stats():
+    """Check Pinecone index stats"""
+    try:
+        stats = index.describe_index_stats()
+        return {"stats": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/route", response_model=RouterResponse)
 async def route_query(req: RouterQuery):
