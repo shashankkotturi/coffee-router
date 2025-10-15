@@ -239,7 +239,7 @@ async def get_all_tools():
         for match in results["matches"]:
             all_tools.append({
                 "id": match["id"],
-                "full_definition": match["metadata"]["full_definition"]
+                "description": match["metadata"]["description"]
             })
         
         return {"tools": all_tools}
