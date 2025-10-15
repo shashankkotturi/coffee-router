@@ -129,13 +129,29 @@ async def seed_tools():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+# @app.get("/index-stats")
+# async def get_index_stats():
+#     """Check Pinecone index stats"""
+#     try:
+#         stats = index.describe_index_stats()
+#         return {"stats": stats}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/index-stats")
 async def get_index_stats():
     """Check Pinecone index stats"""
     try:
         stats = index.describe_index_stats()
-        return {"stats": stats}
+        print("Stats:", stats)
+        # Extract the total vector count
+        total_vectors = stats.get("total_vector_count", 0)
+        return {
+            "total_tools": total_vectors,
+            "status": "success"
+        }
     except Exception as e:
+        print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/route", response_model=RouterResponse)
