@@ -220,6 +220,32 @@ async def list_tools():
     """Get all registered tools"""
     return {"tools": SAMPLE_TOOLS}
 
+@app.get("/all-tools")
+async def get_all_tools():
+    """Get all tools metadata for token calculation"""
+    try:
+        # Fetch all tools from index
+        stats = index.describe_index_stats()
+        total_count = stats.get("total_vector_count", 0)
+        
+        # Query all vectors (paginate if needed)
+        all_tools = []
+        results = index.query(
+            vector=[0] * 1536,  # Dummy vector
+            top_k=total_count,
+            include_metadata=True
+        )
+        
+        for match in results["matches"]:
+            all_tools.append({
+                "id": match["id"],
+                "full_definition": match["metadata"]["full_definition"]
+            })
+        
+        return {"tools": all_tools}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
