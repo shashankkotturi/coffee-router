@@ -252,17 +252,18 @@ Tools found:
 {chr(10).join([f"{i+1}. {t['name']} (score: {t['score']:.2f}): {t['description']}" for i, t in enumerate(all_tools)])}
 
 Now:
-1. Select the 3-5 MOST relevant tools for this specific query
-2. Explain to the user in a friendly way what you found and why these tools help (2-3 sentences max)
-3. If some tools aren't relevant, don't include them
+1. Analyze what the user is trying to accomplish - do they need MULTIPLE tools to complete a workflow?
+2. Select 3-6 tools that work together to solve the user's request. Don't just pick the top 3 by score - think about the complete workflow.
+3. For example: if user wants to "send emails about GitHub issues", you need BOTH the GitHub tool AND the email tool, not just one.
+4. Explain to the user in a friendly way what you found and why these tools help (2-3 sentences max)
 
 CRITICAL: Respond ONLY with valid JSON. No markdown, no extra text, just the JSON object.
 
 Format:
 {{
   "explanation": "Your natural language response to the user",
-  "selected_tool_ids": ["tool_id1", "tool_id2"],
-  "reasoning": "Brief technical reasoning"
+  "selected_tool_ids": ["tool_id1", "tool_id2", "tool_id3"],
+  "reasoning": "Brief technical reasoning explaining why these tools work together"
 }}"""
 
         ranking_response = gemini_model.generate_content(ranking_prompt)
@@ -279,8 +280,8 @@ Format:
         selected_tools = [t for t in all_tools if t["id"] in ranking.get("selected_tool_ids", [])]
         
         if not selected_tools:
-            # Fallback: return top 3 tools by score
-            selected_tools = sorted(all_tools, key=lambda x: x["score"], reverse=True)[:3]
+            # Fallback: return top 5 tools by score
+            selected_tools = sorted(all_tools, key=lambda x: x["score"], reverse=True)[:5]
 
         return AgentResponse(
             explanation=ranking.get("explanation", "I found some relevant tools for your query."),
